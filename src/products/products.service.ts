@@ -145,7 +145,7 @@ export class ProductsService {
   async remove(id: number) {
     try {
       const product = await this.findOne(id);
-      if (product != null) {
+      if (product == null) {
         throw ErrorNotFound(MODULE_NAME);
       }
 
