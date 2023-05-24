@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider                  = "prisma-erd-generator"
+  output                    = "../erd.svg"
+  includeRelationFromFields = "true"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  Finances      Finance[]
+  Prescriptions Prescription[]
+  UserLogs      UserLog[]
+}
+
+model UserLog {
+  id         Int      @id @default(autoincrement())
+  userID     Int
+  logType    String
+  logMessage String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  User       User     @relation(fields: [userID], references: [id])
+}
+
+model Finance {
+  id          Int         @id @default(autoincrement())
+  type        FinanceType
+  description String
+  value       Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  userID      Int
+  User        User        @relation(fields: [userID], references: [id])
+}
+
+model Product {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  sku                 String               @unique
+  price               Int
+  stock               Int
+  priceConfig         Int                  @db.SmallInt
+  includingTaxes      Boolean
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  PrescriptionDetails PrescriptionDetail[]
+}
+
+model Prescription {
+  id                  Int                    @id @default(autoincrement())
+  userID              Int
+  patientName         String
+  clinicName          String
+  doctorName          String
+  totalPrice          Int
+  status              PrescriptionStatusType @default(Created)
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+  User                User                   @relation(fields: [userID], references: [id])
+  PrescriptionDetails PrescriptionDetail[]
+}
+
+model PrescriptionDetail {
+  id             Int          @id @default(autoincrement())
+  prescriptionID Int
+  productID      Int
+  qty            Int
+  name           String
+  originalPrice  Int
+  priceConfig    Int          @db.SmallInt
+  includingTaxes Boolean
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  Product        Product      @relation(fields: [productID], references: [id])
+  Prescription   Prescription @relation(fields: [prescriptionID], references: [id])
+
+  @@unique([prescriptionID, productID])
+}
+
+enum FinanceType {
+  income
+  expense
+}
+
+enum PrescriptionStatusType {
+  Created
+  Cancelled
+  Confirmed
+}
