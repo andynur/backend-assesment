@@ -1,6 +1,8 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import * as redisStore from 'cache-manager-redis-store';
 import { PrismaModule, QueryInfo, loggingMiddleware } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { PrescriptionDetailsModule } from './prescription-details/prescription-details.module';
@@ -16,6 +18,15 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.register({
+      isGlobal: true,
+      store: typeof redisStore,
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD,
+      no_ready_check: true,
+    }),
     PrismaModule.forRoot({
       isGlobal: true,
       prismaServiceOptions: {

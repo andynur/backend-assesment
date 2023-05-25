@@ -36,7 +36,7 @@ async function productSeeder() {
   console.log(`🚀 start product seeder`);
 
   const products = [];
-  for (let i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 1000; i++) {
     const product = {
       name: `${faker.science
         .chemicalElement()

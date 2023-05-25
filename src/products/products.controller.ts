@@ -1,5 +1,8 @@
 import {
   Body,
+  CacheInterceptor,
+  CacheKey,
+  CacheTTL,
   ClassSerializerInterceptor,
   Controller,
   Delete,
@@ -44,6 +47,9 @@ export class ProductsController {
   @ApiQuery(OrderByApiQueryOptions())
   @ApiQuery(OrderRuleApiQueryOptions(ORDER_RULE))
   @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(CacheInterceptor)
+  @CacheKey('product-list-cache')
+  @CacheTTL(30)
   @DefaultApiResponse(ProductEntity, true)
   @UsePipes(ValidationPipe)
   @Get()
@@ -53,7 +59,7 @@ export class ProductsController {
     @Query('page_size', PageSizePipe) pageSize: number,
     @Query('or', new OrderParamPipe(ORDER_RULE)) or = 'id',
     @Query('ob') ob: 'asc' | 'desc' = 'asc',
-  ): Promise<ResponseController<Array<Partial<ProductEntity>>>> {
+  ) {
     const pagination = PaginationQuery(page, pageSize, or, ob);
     const [rows, total] = await this.productsService.findAll(query, pagination);
 
