@@ -18,30 +18,7 @@ model User {
   name          String
   email         String         @unique
   password      String
-  Finances      Finance[]
   Prescriptions Prescription[]
-  UserLogs      UserLog[]
-}
-
-model UserLog {
-  id         Int      @id @default(autoincrement())
-  userID     Int
-  logType    String
-  logMessage String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  User       User     @relation(fields: [userID], references: [id])
-}
-
-model Finance {
-  id          Int         @id @default(autoincrement())
-  type        FinanceType
-  description String
-  value       Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  userID      Int
-  User        User        @relation(fields: [userID], references: [id])
 }
 
 model Product {
@@ -87,11 +64,6 @@ model PrescriptionDetail {
   Prescription   Prescription @relation(fields: [prescriptionID], references: [id])
 
   @@unique([prescriptionID, productID])
-}
-
-enum FinanceType {
-  income
-  expense
 }
 
 enum PrescriptionStatusType {

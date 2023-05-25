@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule, QueryInfo, loggingMiddleware } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
-import { FinancesModule } from './finances/finances.module';
 import { PrescriptionDetailsModule } from './prescription-details/prescription-details.module';
 import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { ProductsModule } from './products/products.module';
@@ -30,7 +29,6 @@ import { UsersModule } from './users/users.module';
         ],
       },
     }),
-    FinancesModule,
     UsersModule,
     AuthModule,
     PasswordHashModule,

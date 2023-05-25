@@ -3,21 +3,15 @@ import {
   Controller,
   Delete,
   Get,
-  Session as GetSession,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Session } from 'express-session';
-import { AUTH_ERRORS } from 'src/auth/auth.constants';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Userbalance } from './entities/user-balance.entity';
 import { UserFinance } from './entities/user-finance.entity';
 import { User } from './entities/user.entity';
 import { USER_DELETED, USER_ERRORS } from './users.constants';
@@ -27,25 +21,6 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @UseGuards(AuthGuard)
-  @Get('balance')
-  @ApiCookieAuth()
-  @ApiResponse({
-    status: 200,
-    type: Userbalance,
-  })
-  @ApiResponse({
-    status: 400,
-    description: USER_ERRORS.INVALID_EXCEPTION,
-  })
-  @ApiResponse({
-    status: 401,
-    description: AUTH_ERRORS.UNAUTHORIZED_EXCEPTION,
-  })
-  getBalance(@GetSession() session: Session) {
-    return this.usersService.getBalance(session.user.email);
-  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

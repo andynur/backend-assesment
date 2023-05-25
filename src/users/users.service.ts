@@ -48,11 +48,6 @@ export class UsersService {
     return await this.prisma.user.findMany({
       select: {
         ...this.userSelect,
-        _count: {
-          select: {
-            Finances: true,
-          },
-        },
       },
     });
   }
@@ -123,42 +118,6 @@ export class UsersService {
 
     return {
       msg: USER_DELETED,
-    };
-  }
-
-  async getBalance(user_email: string) {
-    const userWithFinances = await this.prisma.user.findUnique({
-      where: {
-        email: user_email,
-      },
-      include: {
-        Finances: true,
-      },
-    });
-
-    const incomeAndExpense = {
-      income: 0,
-      expense: 0,
-    };
-
-    userWithFinances.Finances.forEach((finance) => {
-      if (finance.type === 'income') {
-        incomeAndExpense.income += finance.value;
-      } else {
-        incomeAndExpense.expense += finance.value;
-      }
-    });
-
-    const { id, name, email } = userWithFinances;
-    const { income, expense } = incomeAndExpense;
-
-    const balance = income - expense;
-
-    return {
-      id,
-      name,
-      email,
-      total_balance: balance,
     };
   }
 }

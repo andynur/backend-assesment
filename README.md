@@ -51,7 +51,7 @@ yarn start:dev
 
 ## API Documentation
 
-To view the project's API documentation, you can access it through Swagger in `localhost:8000/docs` url or Postman [Collection](google.com).
+To view the project's API documentation, you can access it through Swagger in `localhost:8000/docs` url or Postman [Collection](https://documenter.getpostman.com/view/19148174/2s93m61MmT#5478e830-f360-466b-9fc2-f202d1c35332).
 
 ## Test (WIP)
 
