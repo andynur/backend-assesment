@@ -63,7 +63,7 @@ model Prescription {
   patientName         String
   clinicName          String
   doctorName          String
-  totalPrice          Int
+  totalPrice          Int                    @default(0)
   status              PrescriptionStatusType @default(Created)
   createdAt           DateTime               @default(now())
   updatedAt           DateTime               @updatedAt
@@ -80,6 +80,7 @@ model PrescriptionDetail {
   originalPrice  Int
   priceConfig    Int          @db.SmallInt
   includingTaxes Boolean
+  finalPrice     Int
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   Product        Product      @relation(fields: [productID], references: [id])

@@ -12,13 +12,13 @@ import { AuthService } from 'src/auth/auth.service';
 export class CheckAuthCookieMiddleware implements NestMiddleware {
   constructor(private authService: AuthService) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log('cookie auth middleware: ', req.session.user.email);
     if (req.session.user) {
       const isUserOk = await this.authService.whoIAm(req.session.user.email);
       if (isUserOk) {
         return next();
       }
     }
+
     throw new HttpException(
       AUTH_ERRORS.UNAUTHORIZED_EXCEPTION,
       HttpStatus.UNAUTHORIZED,

@@ -4,6 +4,8 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaModule, QueryInfo, loggingMiddleware } from 'nestjs-prisma';
 import { AuthModule } from './auth/auth.module';
 import { FinancesModule } from './finances/finances.module';
+import { PrescriptionDetailsModule } from './prescription-details/prescription-details.module';
+import { PrescriptionsModule } from './prescriptions/prescriptions.module';
 import { ProductsModule } from './products/products.module';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { CheckAuthCookieMiddleware } from './shared/middlewares/check-auth-cookie/check-auth-cookie.middleware';
@@ -34,6 +36,8 @@ import { UsersModule } from './users/users.module';
     PasswordHashModule,
     ProductsModule,
     ProductsModule,
+    PrescriptionsModule,
+    PrescriptionDetailsModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
@@ -43,6 +47,9 @@ import { UsersModule } from './users/users.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(GlobalMiddleware).forRoutes('*');
-    consumer.apply(CheckAuthCookieMiddleware).forRoutes('finances');
+    consumer
+      .apply(CheckAuthCookieMiddleware)
+      .exclude('/api/v1/auth/(.*)')
+      .forRoutes('*');
   }
 }

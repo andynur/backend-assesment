@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { PrescriptionStatusType, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -58,66 +58,9 @@ async function productSeeder() {
   return await prisma.product.createMany({ data: products });
 }
 
-async function prescriptionSeeder() {
-  console.log(`🚀 start prescription seeder`);
-
-  const prescriptions = [];
-  for (let i = 1; i <= 50; i++) {
-    const prescription = {
-      patientName: `${faker.person.firstName()} ${faker.person.lastName()}`,
-      clinicName: `${faker.science
-        .chemicalElement()
-        .name.toUpperCase()} CLINIC`,
-      doctorName: `Dr. ${faker.person.firstName()} ${faker.person.lastName()} S.Ked`,
-      totalPrice: 500000,
-      status: PrescriptionStatusType.Created,
-      userID: faker.helpers.rangeToNumber({ min: 1, max: 15 }),
-      createdAt: faker.date.recent(),
-      updatedAt: faker.date.recent(),
-    };
-
-    prescriptions.push(prescription);
-  }
-
-  return await prisma.prescription.createMany({ data: prescriptions });
-}
-
-async function prescriptionDetailSeeder() {
-  console.log(`🚀 start prescription detail seeder`);
-
-  let no = 1;
-  const prescriptionDetails = [];
-  for (let i = 1; i < 50; i++) {
-    // const maxDetail = faker.helpers.rangeToNumber({ min: 3, max: 5 });
-    // for (let j = 1; j <= maxDetail; j++) {
-    const prescriptionDetail = {
-      id: no,
-      prescriptionID: i,
-      productID: i + 10,
-      qty: faker.helpers.rangeToNumber({ min: 1, max: 10 }),
-      name: '-',
-      originalPrice: parseInt(faker.commerce.price({ min: 5000, max: 100000 })),
-      priceConfig: faker.number.int({ min: 1, max: 2 }),
-      includingTaxes: faker.datatype.boolean(),
-      createdAt: faker.date.recent(),
-      updatedAt: faker.date.recent(),
-    };
-
-    prescriptionDetails.push(prescriptionDetail);
-    no++;
-    // }
-  }
-
-  return await prisma.prescriptionDetail.createMany({
-    data: prescriptionDetails,
-  });
-}
-
 async function main() {
   userSeeder();
   productSeeder();
-  // prescriptionSeeder();
-  // prescriptionDetailSeeder();
 }
 
 main()

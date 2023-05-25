@@ -4,7 +4,7 @@
 
 Change .example.env to .env and fill the variables
 
-```
+```bash
 # If you are using docker you dont have to change the DATABASE_URL
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/lifepack_db?schema=public"
 # Salt round
@@ -17,11 +17,11 @@ SESSION_SECRET=
 
 Build the docker container
 
-```
+```bash
 yarn docker:dev
 ```
 
-you can test the app on localhost:8000 now
+you can test the app on `localhost:8000` now
 
 > Nest dont support pre-post script hooks (as far i know), so after you are done with `yarn docker:dev`, exit the process (ctrl + c) and run `yarn container:stop`
 
@@ -33,25 +33,25 @@ you can test the app on localhost:8000 now
 
 Install dependencies
 
-```
+```bash
 yarn or npm install
 ```
 
 run prisma migration
 
-```
+```bash
 prisma migrate dev // yarn docker:migrate
 ```
 
 Run the app
 
-```
+```bash
 yarn start:dev
 ```
 
-## Swagger file
+## API Documentation
 
-check localhost:8000/api
+To view the project's API documentation, you can access it through Swagger in `localhost:8000/docs` url or Postman [Collection](google.com).
 
 ## Test (WIP)
 
@@ -74,5 +74,7 @@ just missing the end-to-end tests to get the coverage of the funcs
 ![coverage](./docs/coverage.png)
 
 ## ERD
+
+build with [prisma-erd-generator](https://github.com/keonik/prisma-erd-generator)
 
 ![erd](./erd.svg)

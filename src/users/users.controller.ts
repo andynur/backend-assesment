@@ -1,27 +1,27 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
   Session as GetSession,
-  HttpStatus,
   HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Session } from 'express-session';
+import { AUTH_ERRORS } from 'src/auth/auth.constants';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Session } from 'express-session';
-import { ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from './entities/user.entity';
-import { UserFinance } from './entities/user-finance.entity';
 import { Userbalance } from './entities/user-balance.entity';
+import { UserFinance } from './entities/user-finance.entity';
+import { User } from './entities/user.entity';
 import { USER_DELETED, USER_ERRORS } from './users.constants';
-import { AUTH_ERRORS } from 'src/auth/auth.constants';
+import { UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('users')

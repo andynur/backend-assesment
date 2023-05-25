@@ -2,8 +2,8 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
+  Session as GetSession,
   Param,
   ParseIntPipe,
   Patch,
@@ -12,7 +12,8 @@ import {
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Session } from 'express-session';
 import { DefaultApiResponse } from 'src/shared/decorators/default-api-response.decorator';
 import { PaginationResponse } from 'src/shared/dto';
 import {
@@ -27,35 +28,38 @@ import { PageSizePipe } from 'src/shared/pipes/page-size.pipe';
 import { PagePipe } from 'src/shared/pipes/page.pipe';
 import { ValidationPipe } from 'src/shared/pipes/validation.pipe';
 import { ResponseController } from 'src/shared/types';
-import { CreateProductDto } from './dto/create-product.dto';
-import { QueryProductDto } from './dto/query-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductEntity } from './entities/product.entity';
-import { ORDER_RULE } from './products.constants';
-import { ProductsService } from './products.service';
+import { CreatePrescriptionDto } from './dto/create-prescription.dto';
+import { QueryPrescriptionDto } from './dto/query-prescription.dto';
+import { PrescriptionEntity } from './entities/prescription.entity';
+import { ORDER_RULE } from './prescriptions.constants';
+import { PrescriptionsService } from './prescriptions.service';
 
-@ApiTags('products')
-@Controller('products')
-export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+@ApiTags('prescriptions')
+@ApiCookieAuth()
+@Controller('prescriptions')
+export class PrescriptionsController {
+  constructor(private readonly prescriptionsService: PrescriptionsService) {}
 
   @ApiQuery(PageApiQueryOptions())
   @ApiQuery(PageSizeApiQueryOptions())
   @ApiQuery(OrderByApiQueryOptions())
   @ApiQuery(OrderRuleApiQueryOptions(ORDER_RULE))
   @UseInterceptors(ClassSerializerInterceptor)
-  @DefaultApiResponse(ProductEntity, true)
+  @DefaultApiResponse(PrescriptionEntity, true)
   @UsePipes(ValidationPipe)
   @Get()
   async findAll(
-    @Query() query: QueryProductDto,
+    @Query() query: QueryPrescriptionDto,
     @Query('page', PagePipe) page: number,
     @Query('page_size', PageSizePipe) pageSize: number,
     @Query('or', new OrderParamPipe(ORDER_RULE)) or = 'id',
     @Query('ob') ob: 'asc' | 'desc' = 'asc',
-  ): Promise<ResponseController<Array<Partial<ProductEntity>>>> {
+  ): Promise<ResponseController<Array<Partial<PrescriptionEntity>>>> {
     const pagination = PaginationQuery(page, pageSize, or, ob);
-    const [rows, total] = await this.productsService.findAll(query, pagination);
+    const [rows, total] = await this.prescriptionsService.findAll(
+      query,
+      pagination,
+    );
 
     return {
       data: rows,
@@ -64,40 +68,48 @@ export class ProductsController {
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
-  @DefaultApiResponse(ProductEntity, false, false)
+  @DefaultApiResponse(PrescriptionEntity, false, false)
   @Get('/:id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const product = await this.productsService.findOne(id);
-    return { data: product };
+    const prescription = await this.prescriptionsService.findOne(id);
+    return { data: prescription };
   }
 
   @Post('/')
-  @DefaultApiResponse(String, false, true)
+  @DefaultApiResponse(PrescriptionEntity, false, true)
   async create(
-    @Body(ValidationPipe()) input: CreateProductDto,
+    @Body(ValidationPipe()) input: CreatePrescriptionDto,
+    @GetSession() session: Session,
   ): Promise<ResponseController> {
-    await this.productsService.create(input);
-    return { data: 'data created' };
+    const prescription = await this.prescriptionsService.create(
+      input,
+      session.user.email,
+    );
+
+    return { data: prescription };
   }
 
-  @Patch('/:id')
-  @DefaultApiResponse(String, false, true)
-  async update(
+  @Patch(':id/checkout')
+  @DefaultApiResponse(PrescriptionEntity, false, true)
+  async checkout(
     @Param('id', ParseIntPipe) id: number,
-    @Body(ValidationPipe()) input: UpdateProductDto,
   ): Promise<ResponseController> {
-    await this.productsService.update(id, input);
+    const prescription = await this.prescriptionsService.checkout(id);
+
     return {
-      data: 'data updated',
+      data: prescription,
     };
   }
 
-  @DefaultApiResponse(String, false, true)
-  @Delete('/:id')
-  async remove(
+  @Patch(':id/cancel')
+  @DefaultApiResponse(PrescriptionEntity, false, true)
+  async cancel(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<ResponseController> {
-    await this.productsService.remove(id);
-    return { data: 'data deleted' };
+    const prescription = await this.prescriptionsService.cancel(id);
+
+    return {
+      data: prescription,
+    };
   }
 }
