@@ -1,4 +1,4 @@
-# Back-End Lifepack Assessment
+# Back-End Assessment
 
 ## Instructions
 
